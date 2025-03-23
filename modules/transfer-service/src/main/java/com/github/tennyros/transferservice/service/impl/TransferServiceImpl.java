@@ -8,8 +8,12 @@ import com.github.tennyros.transferservice.model.TransferRestModel;
 import com.github.tennyros.transferservice.service.TransferService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+
+import static org.springframework.http.HttpMethod.GET;
 
 @Slf4j
 @Service
@@ -18,6 +22,7 @@ public class TransferServiceImpl implements TransferService {
 
     private final KafkaTemplate<String, Object> kafkaTemplate;
     private final KafkaPropertiesConfig kafkaProperties;
+    private final RestTemplate restTemplate;
 
     @Override
     public boolean transfer(TransferRestModel transferRestModel) {
@@ -28,7 +33,7 @@ public class TransferServiceImpl implements TransferService {
             kafkaTemplate.send(kafkaProperties.getTopics().get("withdraw-money"), withdrawalEvent);
             log.info("Sent event to withdrawal topic: {}", withdrawalEvent);
 
-            // TODO: 03/23/2025 remote service method call
+            callRemoteService();
 
             kafkaTemplate.send(kafkaProperties.getTopics().get("deposit-money"), depositEvent);
             log.info("Sent event to deposit topic: {}", depositEvent);
@@ -55,6 +60,20 @@ public class TransferServiceImpl implements TransferService {
                 .recipientId(transferRestModel.getRecipientId())
                 .amount(transferRestModel.getAmount())
                 .build();
+    }
+
+    private void callRemoteService() {
+
+        String requestUrl = "http://localhost:8090/response/200";
+        ResponseEntity<String> response = restTemplate.exchange(requestUrl, GET, null, String.class);
+
+        if (response.getStatusCode().is2xxSuccessful()) {
+            log.info("Received response from mock service: {}", response.getBody());
+        }
+
+        if (response.getStatusCode().is5xxServerError()) {
+            throw new TransferServiceException("Destination service not available");
+        }
     }
 
 }
