@@ -1,7 +1,7 @@
 package com.github.tennyros.transferservice.service.impl;
 
-import com.github.tennyros.eventmodels.events.DepositRequestedEvent;
-import com.github.tennyros.eventmodels.events.WithdrawalRequestedEvent;
+import com.github.tennyros.eventmodels.event.DepositRequestedEvent;
+import com.github.tennyros.eventmodels.event.WithdrawalRequestedEvent;
 import com.github.tennyros.transferservice.config.KafkaPropertiesConfig;
 import com.github.tennyros.transferservice.error.TransferServiceException;
 import com.github.tennyros.transferservice.model.TransferRestModel;
