@@ -15,7 +15,7 @@ public class KafkaConfig {
     private final KafkaPropertiesConfig kafkaProperties;
 
     @Bean
-    public NewTopic createWithdrawTopic() {
+    NewTopic createWithdrawTopic() {
         return TopicBuilder.name(kafkaProperties.getTopics().get("withdraw-money"))
                 .partitions(kafkaProperties.getPartitions())
                 .replicas(kafkaProperties.getReplicas())
@@ -23,7 +23,7 @@ public class KafkaConfig {
     }
 
     @Bean
-    public NewTopic createDepositTopic() {
+    NewTopic createDepositTopic() {
         return TopicBuilder.name(kafkaProperties.getTopics().get("deposit-money"))
                 .partitions(kafkaProperties.getPartitions())
                 .replicas(kafkaProperties.getReplicas())

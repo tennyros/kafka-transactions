@@ -20,6 +20,9 @@
     <modules>
         <module>modules/transfer-service</module>
         <module>modules/event-models</module>
+        <module>modules/withdrawal-service</module>
+        <module>modules/deposit-service</module>
+        <module>modules/mock-service</module>
     </modules>
 
     <url/>

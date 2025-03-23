@@ -1,4 +1,4 @@
-package com.github.tennyros.eventmodels.events;
+package com.github.tennyros.eventmodels.event;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,7 +15,7 @@ import java.math.BigDecimal;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class DepositRequestedEvent {
+public class WithdrawalRequestedEvent {
 
     private String senderId;
     private String recipientId;
