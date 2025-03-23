@@ -18,7 +18,8 @@
     <packaging>pom</packaging>
 
     <modules>
-
+        <module>modules/transfer-service</module>
+        <module>modules/event-models</module>
     </modules>
 
     <url/>
