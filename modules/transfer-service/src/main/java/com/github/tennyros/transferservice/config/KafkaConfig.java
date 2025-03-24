@@ -2,10 +2,20 @@ package com.github.tennyros.transferservice.config;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.admin.NewTopic;
+import org.apache.kafka.clients.producer.ProducerConfig;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.config.TopicBuilder;
+import org.springframework.kafka.core.DefaultKafkaProducerFactory;
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.core.ProducerFactory;
+import org.springframework.kafka.transaction.KafkaTransactionManager;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Configuration
 @RequiredArgsConstructor
@@ -13,6 +23,25 @@ import org.springframework.kafka.config.TopicBuilder;
 public class KafkaConfig {
 
     private final KafkaPropertiesConfig kafkaProperties;
+
+    @Bean
+    ProducerFactory<String, Object> producerFactory(KafkaProperties kafkaProperties) {
+        Map<String, Object> conf = new HashMap<>(kafkaProperties.buildProducerProperties());
+        conf.put(ProducerConfig.TRANSACTIONAL_ID_CONFIG, kafkaProperties.getProducer().getTransactionIdPrefix());
+        return new DefaultKafkaProducerFactory<>(conf);
+    }
+
+    @Bean
+    KafkaTemplate<String, Object> kafkaTemplate(ProducerFactory<String, Object> producerFactory) {
+        return new KafkaTemplate<>(producerFactory);
+    }
+
+    @Bean
+    KafkaTransactionManager<String, Object> kafkaTransactionManager(
+            ProducerFactory<String, Object> producerFactory) {
+
+        return new KafkaTransactionManager<>(producerFactory);
+    }
 
     @Bean
     NewTopic createWithdrawTopic() {
