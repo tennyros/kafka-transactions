@@ -30,7 +30,7 @@ public class KafkaConfig {
     }
 
     @Bean
-    public ProducerFactory<String, Object> productFactory(KafkaProperties kafkaProperties) {
+    public ProducerFactory<String, Object> producerFactory(KafkaProperties kafkaProperties) {
         Map<String, Object> conf = new HashMap<>(kafkaProperties.buildProducerProperties());
         return new DefaultKafkaProducerFactory<>(conf);
     }

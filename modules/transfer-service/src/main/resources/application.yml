@@ -11,6 +11,7 @@ spring:
       acks: all
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      transaction-id-prefix: transfer-service-${random.value}-
       properties:
         delivery.timeout.ms: 120000
         linger.ms: 0
@@ -25,3 +26,8 @@ app:
       deposit-money: deposit-money-topic
     partitions: 3
     replicas: 3
+
+logging:
+  level:
+    org.springframework.transaction: TRACE
+    org.springframework.kafka.transaction: TRACE

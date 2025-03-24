@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
 import static org.springframework.http.HttpMethod.GET;
@@ -25,6 +26,7 @@ public class TransferServiceImpl implements TransferService {
     private final RestTemplate restTemplate;
 
     @Override
+    @Transactional
     public boolean transfer(TransferRestModel transferRestModel) {
         WithdrawalRequestedEvent withdrawalEvent = eventCreationWithdrawal(transferRestModel);
         DepositRequestedEvent depositEvent = eventCreationDeposit(transferRestModel);
