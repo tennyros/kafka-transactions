@@ -5,9 +5,13 @@ import com.github.tennyros.eventmodels.event.WithdrawalRequestedEvent;
 import com.github.tennyros.transferservice.config.KafkaPropertiesConfig;
 import com.github.tennyros.transferservice.error.TransferServiceException;
 import com.github.tennyros.transferservice.model.TransferRestModel;
+import com.github.tennyros.transferservice.persistence.entity.TransferEntity;
+import com.github.tennyros.transferservice.persistence.repository.TransferRepository;
 import com.github.tennyros.transferservice.service.TransferService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.kafka.common.Uuid;
+import org.springframework.beans.BeanUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
@@ -23,15 +27,21 @@ public class TransferServiceImpl implements TransferService {
 
     private final KafkaTemplate<String, Object> kafkaTemplate;
     private final KafkaPropertiesConfig kafkaProperties;
+    private final TransferRepository transferRepository;
     private final RestTemplate restTemplate;
 
     @Override
-    @Transactional
+    @Transactional("transactionManager")
     public boolean transfer(TransferRestModel transferRestModel) {
         WithdrawalRequestedEvent withdrawalEvent = eventCreationWithdrawal(transferRestModel);
         DepositRequestedEvent depositEvent = eventCreationDeposit(transferRestModel);
 
         try {
+            TransferEntity transferEntity = new TransferEntity();
+            BeanUtils.copyProperties(transferRestModel, transferEntity);
+            transferEntity.setTransferId(Uuid.randomUuid().toString());
+            transferRepository.save(transferEntity);
+
             kafkaTemplate.send(kafkaProperties.getTopics().get("withdraw-money"), withdrawalEvent);
             log.info("Sent event to withdrawal topic: {}", withdrawalEvent);
 
